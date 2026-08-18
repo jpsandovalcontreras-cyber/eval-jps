@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación BIS-11 | Juan Pablo Sandoval, Psicólogo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #0f2540;
+      --primary-dark: #0a1a2e;
+      --accent-color: #0d9488;
+      --accent-light: #14b8a6;
+      --bg-color: #f1f5f4;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #dde3e6;
+      --success-color: #0d9488;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(15, 37, 64, 0.10);
+      width: 100%;
+      max-width: 780px;
+      overflow: hidden;
+      margin: 10px 0;
+      height: fit-content;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: #ffffff;
+      padding: 32px 36px 26px;
+      text-align: center;
+    }
+
+    .header .badge {
+      width: 56px;
+      height: 56px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+    }
+
+    .header h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .header .subtitle {
+      font-size: 0.85rem;
+      color: #b9c6d4;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .professional-info {
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: inline-block;
+      text-align: left;
+      font-size: 0.82rem;
+      color: #dbe4ec;
+    }
+
+    .professional-info strong {
+      color: #ffffff;
+      font-size: 0.92rem;
+    }
+
+    .professional-info a {
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+
+    .professional-info a:hover { text-decoration: underline; }
+
+    .body-content {
+      padding: 30px 36px 36px;
+    }
+
+    .instructions {
+      background-color: #f0faf9;
+      border-left: 4px solid var(--accent-color);
+      padding: 20px 26px;
+      margin-bottom: 28px;
+      font-size: 1.08rem;
+      line-height: 1.65;
+      border-radius: 0 6px 6px 0;
+      text-align: center;
+    }
+
+    .instructions strong {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .confidentiality {
+      background-color: #fffbeb;
+      border-left: 4px solid #d97706;
+      padding: 12px 16px;
+      margin-bottom: 26px;
+      font-size: 0.85rem;
+      color: #78350f;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin: 26px 0 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+      text-align: center;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .form-group { margin-bottom: 0; }
+
+    label.field-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+      color: var(--text-color);
+    }
+
+    input[type="text"], input[type="number"], input[type="date"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 7px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    input[readonly] {
+      background-color: #f4f6f7;
+      color: var(--text-muted);
+    }
+
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      background: var(--card-bg);
+      padding: 12px 0 16px;
+      z-index: 5;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 22px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #e5eaec;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 20px;
+    }
+
+    .item-card {
+      background: #f8fafa;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .item-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 0.93rem;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      padding: 11px 14px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border-color);
+      cursor: pointer;
+      font-size: 0.88rem;
+      min-height: 44px;
+      transition: all 0.15s;
+    }
+
+    .option-btn input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-color);
+      flex-shrink: 0;
+    }
+
+    .option-btn:hover {
+      background-color: #eef7f6;
+      border-color: var(--accent-color);
+    }
+
+    .consent-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #f8fafa;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 24px;
+      font-size: 0.85rem;
+    }
+
+    .consent-box input {
+      margin-top: 3px;
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent-color);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    button.submit-btn {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.02rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.25s, opacity 0.25s;
+      margin-top: 20px;
+      letter-spacing: 0.2px;
+    }
+
+    button.submit-btn:hover:not(:disabled) {
+      background-color: #0b7a70;
+    }
+
+    button.submit-btn:disabled {
+      background-color: #b5c0c2;
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .helper-text {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .hidden { display: none; }
+
+    #thank-you-screen {
+      text-align: center;
+      padding: 60px 36px;
+    }
+
+    #thank-you-screen .check-circle {
+      width: 68px;
+      height: 68px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+      font-size: 2rem;
+    }
+
+    #thank-you-screen h2 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 1.4rem;
+    }
+
+    #thank-you-screen p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 420px;
+      margin: 6px auto;
+    }
+
+    .signature {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .signature strong {
+      color: var(--text-color);
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .options-grid { grid-template-columns: 1fr 1fr; }
+      .header, .body-content { padding-left: 20px; padding-right: 20px; }
+      .instructions { padding: 16px 18px; font-size: 1rem; }
+    }
+
+    @media (max-width: 400px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div id="test-screen">
+
+    <div class="header">
+      <div class="badge">JP</div>
+      <h1>Evaluación de Autocontrol e Impulsividad</h1>
+      <div class="subtitle">Escala de Impulsividad de Barratt · BIS-11</div>
+      <div class="professional-info">
+        <strong>Juan Pablo Sandoval</strong><br>
+        Psicólogo · Registro N° 97596<br>
+        <a href="https://rnpi.superdesalud.gob.cl/" target="_blank" rel="noopener">Registro Nacional de Prestadores Individuales de Salud (RNPI)</a>
+      </div>
+    </div>
+
+    <div class="body-content">
+
+      <form id="bis-form" action="https://formspree.io/f/maewpgyl" method="POST" onsubmit="handleFormSubmit(event)">
+
+        <input type="hidden" name="_subject" id="email-subject" value="Resultado Evaluación BIS-11">
+
+        <div class="section-title">Datos del Evaluado</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="field-label" for="nombres">Nombres</label>
+            <input type="text" id="nombres" name="Nombres" required>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="apellido-paterno">Apellido Paterno</label>
+            <input type="text" id="apellido-paterno" name="Apellido Paterno" required>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="apellido-materno">Apellido Materno</label>
+            <input type="text" id="apellido-materno" name="Apellido Materno" required>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="rut">RUT</label>
+            <input type="text" id="rut" name="RUT Evaluado" placeholder="12.345.678-9" maxlength="12" required>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="edad">Edad</label>
+            <input type="number" id="edad" name="Edad" min="1" max="120" required>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="fecha">Fecha de Evaluación</label>
+            <input type="date" id="fecha" name="Fecha Evaluacion" readonly>
+          </div>
+        </div>
+
+        <div class="instructions" style="background-color:#eef4fb; border-left-color:var(--primary-color);">
+          <strong>¿Para qué sirve esta evaluación?</strong> Este test mide su nivel de autocontrol al actuar, decidir y concentrarse. Es parte de la evaluación psicológica requerida para la obtención del <a href="https://segprivada.minsegpublica.gob.cl/descargables-autorizaciones" target="_blank" rel="noopener">certificado de idoneidad psicológica exigido por la Subsecretaría de Prevención del Delito</a> para el ejercicio de cargos de seguridad privada. No mide inteligencia ni conocimientos: no hay respuestas "buenas" o "malas", solo formas distintas de ser.
+        </div>
+
+        <div class="instructions">
+          <strong>Instrucciones:</strong> Las personas son diferentes en cuanto a la forma en que se comportan y piensan en distintas situaciones. Ésta es una prueba para medir algunas de las formas en que usted actúa y piensa. No se detenga demasiado tiempo en ninguna de las oraciones. Responda rápida y honestamente.
+        </div>
+
+        <div class="confidentiality">
+          <strong>Confidencialidad:</strong> Sus respuestas son confidenciales y serán revisadas exclusivamente por el profesional a cargo de esta evaluación.
+        </div>
+
+        <div class="confidentiality" style="border-left-color:var(--primary-color); background-color:#f4f6f9; color:var(--text-muted);">
+          <strong style="color:var(--text-color);">Tratamiento de datos personales:</strong> Los datos aquí registrados se recopilan y almacenan conforme a la Ley N° 19.628 sobre Protección de la Vida Privada, y se utilizan exclusivamente para fines de esta evaluación psicológica.
+        </div>
+
+        <div class="section-title">Cuestionario</div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progreso</span>
+            <span id="progress-count">0 / 30</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div id="items-container"></div>
+
+        <input type="hidden" name="Puntaje Total BIS-11" id="hidden-score">
+        <input type="hidden" name="Dictamen Psicologico (Aptitud)" id="hidden-aptitud">
+        <input type="hidden" name="Interpretacion Global" id="hidden-interpretation">
+        <input type="hidden" name="Subescala Cognitiva / Atencional" id="hidden-sub-atencional">
+        <input type="hidden" name="Subescala Motora" id="hidden-sub-motora">
+        <input type="hidden" name="Subescala No Planeada" id="hidden-sub-noplaneada">
+        <input type="hidden" name="Duracion de la Prueba" id="hidden-duration">
+        <input type="hidden" name="Hora de Inicio" id="hidden-start-time">
+        <input type="hidden" name="Hora de Termino" id="hidden-end-time">
+
+        <label class="consent-box">
+          <input type="checkbox" id="consent" required>
+          <span>Acepto participar en esta evaluación y declaro que mis respuestas reflejan honestamente mi forma habitual de actuar y pensar.</span>
+        </label>
+
+        <button type="button" class="submit-btn" id="review-btn" disabled onclick="showReview()">Revisar mis Datos</button>
+        <div class="helper-text" id="helper-text">Complete todos los ítems y acepte la declaración para continuar.</div>
+
+      </form>
+
+      <!-- PANTALLA DE REVISIÓN ANTES DE ENVIAR -->
+      <div id="review-screen" class="hidden">
+        <div class="section-title">Revise sus Datos antes de Enviar</div>
+        <div class="instructions" style="text-align:left;">
+          <div id="review-summary" style="font-size:0.95rem; line-height:1.9;"></div>
+        </div>
+        <div class="helper-text" style="margin-bottom:14px;">Verifique que su nombre, RUT y edad estén correctos. Si necesita corregir algo, use el botón "Editar".</div>
+        <div style="display:flex; gap:12px;">
+          <button type="button" class="submit-btn" style="background-color:var(--text-muted);" onclick="hideReview()">Editar</button>
+          <button type="button" class="submit-btn" onclick="finalSubmit()">Confirmar y Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="thank-you-screen" class="hidden">
+    <div class="check-circle">✓</div>
+    <h2>Evaluación Completada</h2>
+    <p>Sus respuestas han sido registradas y enviadas exitosamente al profesional a cargo.</p>
+    <p>Muchas gracias por su participación.</p>
+    <div class="signature">
+      <strong>Juan Pablo Sandoval</strong>
+      Psicólogo · Registro N° 97596
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const items = [
+    "1. Planifico las tareas con cuidado.",
+    "2. Hago las cosas sin pensar.",
+    "3. Me decido rápidamente.",
+    "4. Tengo la mente despejada.",
+    "5. Concentrarme me resulta fácil.",
+    "6. Ahorro con regularidad.",
+    "7. Me cuesta estar quieto/a durante mucho tiempo.",
+    "8. Pienso las cosas detenidamente.",
+    "9. Planifico mi futuro financiero.",
+    "10. Actúo por impulso.",
+    "11. Me aburro fácilmente intentando pensar en cosas abstractas.",
+    "12. Cambio de opinión con frecuencia.",
+    "13. Actúo de forma irreflexiva.",
+    "14. Tomo decisiones rápidamente.",
+    "15. Soy una persona impulsiva.",
+    "16. Cambio de trabajo o pasatiempos con frecuencia.",
+    "17. Actúo sin pensar.",
+    "18. Me cuesta prestar atención.",
+    "19. Me entusiasman las nuevas ideas rápidamente.",
+    "20. Resuelvo problemas por ensayo y error.",
+    "21. Realizo compras impulsivas.",
+    "22. Planifico viajes o vacaciones con anticipación.",
+    "23. Pierdo el control con facilidad.",
+    "24. Disfruto pensando profundamente sobre problemas complejos.",
+    "25. Me distraigo fácilmente.",
+    "26. Siento inquietud motora cuando estoy sentado/a.",
+    "27. Me cuesta mantener la concentración.",
+    "28. Digo cosas sin pensar.",
+    "29. Hago compras de las que luego me arrepiento.",
+    "30. Calculo los riesgos antes de actuar."
+  ];
+
+  const reverseItems = [1, 5, 6, 7, 8, 10, 11, 13, 17, 19, 22, 24, 30];
+
+  const subAtencional = [4, 5, 9, 11, 12, 19, 20, 27, 28, 30];
+  const subMotora = [2, 3, 4, 16, 17, 19, 21, 22, 23, 25, 30];
+  const subNoPlaneada = [1, 7, 8, 10, 13, 14, 15, 18, 26, 29];
+
+  function renderItems() {
+    const container = document.getElementById('items-container');
+    items.forEach((itemText, index) => {
+      const itemNum = index + 1;
+      const card = document.createElement('div');
+      card.className = 'item-card';
+
+      card.innerHTML = `
+        <div class="item-title">${itemText}</div>
+        <div class="options-grid">
+          <label class="option-btn">
+            <input type="radio" name="item_${itemNum}" value="1" required> Raramente / Nunca
+          </label>
+          <label class="option-btn">
+            <input type="radio" name="item_${itemNum}" value="2"> Ocasionalmente
+          </label>
+          <label class="option-btn">
+            <input type="radio" name="item_${itemNum}" value="3"> A menudo
+          </label>
+          <label class="option-btn">
+            <input type="radio" name="item_${itemNum}" value="4"> Siempre / Casi siempre
+          </label>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function setToday() {
+    const fechaInput = document.getElementById('fecha');
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    fechaInput.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  function formatRut(value) {
+    let clean = value.replace(/[^0-9kK]/g, '').toUpperCase();
+    if (clean.length === 0) return '';
+    let body = clean.slice(0, -1);
+    let dv = clean.slice(-1);
+    body = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return dv ? `${body}-${dv}` : body;
+  }
+
+  function setupRutFormatting() {
+    const rutInput = document.getElementById('rut');
+    rutInput.addEventListener('input', (e) => {
+      const cursorAtEnd = e.target.selectionEnd === e.target.value.length;
+      e.target.value = formatRut(e.target.value);
+      if (cursorAtEnd) {
+        e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
+      }
+    });
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    for (let i = 1; i <= 30; i++) {
+      if (document.querySelector(`input[name="item_${i}"]:checked`)) answered++;
+    }
+    document.getElementById('progress-count').textContent = `${answered} / 30`;
+    document.getElementById('progress-bar').style.width = `${(answered / 30) * 100}%`;
+    checkFormComplete(answered);
+  }
+
+  function checkFormComplete(answered) {
+    const nombres = document.getElementById('nombres').value.trim();
+    const apPaterno = document.getElementById('apellido-paterno').value.trim();
+    const apMaterno = document.getElementById('apellido-materno').value.trim();
+    const rut = document.getElementById('rut').value.trim();
+    const edad = document.getElementById('edad').value.trim();
+    const consent = document.getElementById('consent').checked;
+
+    const complete = answered === 30 && nombres && apPaterno && apMaterno && rut && edad && consent;
+    const btn = document.getElementById('review-btn');
+    btn.disabled = !complete;
+    document.getElementById('helper-text').style.display = complete ? 'none' : 'block';
+  }
+
+  function setupFormListeners() {
+    document.getElementById('bis-form').addEventListener('change', updateProgress);
+    document.getElementById('bis-form').addEventListener('input', updateProgress);
+  }
+
+  // Registro de hora de inicio (visible solo para el profesional, nunca para el evaluado)
+  let startTime = null;
+
+  function recordStartTime() {
+    startTime = new Date();
+    document.getElementById('hidden-start-time').value = startTime.toLocaleString('es-CL');
+  }
+
+  function formatDuration(ms) {
+    const totalSeconds = Math.round(ms / 1000);
+    const min = Math.floor(totalSeconds / 60);
+    const sec = totalSeconds % 60;
+    return `${min} min ${sec} s`;
+  }
+
+  function showReview() {
+    const nombres = document.getElementById('nombres').value;
+    const apPaterno = document.getElementById('apellido-paterno').value;
+    const apMaterno = document.getElementById('apellido-materno').value;
+    const rut = document.getElementById('rut').value;
+    const edad = document.getElementById('edad').value;
+    const fecha = document.getElementById('fecha').value;
+
+    document.getElementById('review-summary').innerHTML = `
+      <strong>Nombre completo:</strong> ${nombres} ${apPaterno} ${apMaterno}<br>
+      <strong>RUT:</strong> ${rut}<br>
+      <strong>Edad:</strong> ${edad} años<br>
+      <strong>Fecha de evaluación:</strong> ${fecha}<br>
+      <strong>Ítems respondidos:</strong> 30 / 30
+    `;
+
+    document.querySelector('.section-title:nth-of-type(1)');
+    document.getElementById('bis-form').querySelectorAll('.form-grid, .confidentiality, .progress-wrap, #items-container, .consent-box, #review-btn, .helper-text').forEach(el => {
+      el.classList.add('hidden');
+    });
+    document.querySelectorAll('.section-title').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.instructions').forEach(el => el.classList.add('hidden'));
+
+    document.getElementById('review-screen').classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
+
+  function hideReview() {
+    document.getElementById('review-screen').classList.add('hidden');
+    document.getElementById('bis-form').querySelectorAll('.form-grid, .confidentiality, .progress-wrap, #items-container, .consent-box, #review-btn, .helper-text').forEach(el => {
+      el.classList.remove('hidden');
+    });
+    document.querySelectorAll('.section-title').forEach(el => el.classList.remove('hidden'));
+    document.querySelectorAll('.instructions').forEach(el => el.classList.remove('hidden'));
+    window.scrollTo(0, 0);
+  }
+
+  function finalSubmit() {
+    handleFormSubmit();
+  }
+
+  function handleFormSubmit(event) {
+    if (event) event.preventDefault();
+
+    let totalScore = 0;
+    let scoreAtencional = 0;
+    let scoreMotora = 0;
+    let scoreNoPlaneada = 0;
+
+    for (let i = 1; i <= 30; i++) {
+      const selectedOption = document.querySelector(`input[name="item_${i}"]:checked`);
+      if (!selectedOption) return;
+
+      let val = parseInt(selectedOption.value, 10);
+
+      if (reverseItems.includes(i)) {
+        val = 5 - val;
+      }
+
+      totalScore += val;
+
+      if (subAtencional.includes(i)) scoreAtencional += val;
+      if (subMotora.includes(i)) scoreMotora += val;
+      if (subNoPlaneada.includes(i)) scoreNoPlaneada += val;
+    }
+
+    let interpretation = "";
+    let aptitud = "";
+
+    if (totalScore <= 51) {
+      interpretation = "Impulsividad Extremadamente Baja / Sobre-control inhibitorio (30-51 pts).";
+      aptitud = "APTO (Sin rasgos impulsivos significativos)";
+    } else if (totalScore <= 71) {
+      interpretation = "Impulsividad Dentro de Rango Normal / Esperado (52-71 pts).";
+      aptitud = "APTO (Control de impulsos adecuado para desempeño funcional)";
+    } else {
+      interpretation = "Impulsividad Elevada / Alto rasgo impulsivo (72-120 pts).";
+      aptitud = "NO APTO / REQUIERE EVALUACIÓN COMPLEMENTARIA (Impulsividad elevada)";
+    }
+
+    let interpAtencional = "";
+    if (scoreAtencional <= 17) interpAtencional = "Baja / Excesivo foco atencional";
+    else if (scoreAtencional <= 24) interpAtencional = "Normal / Adecuado control de atención";
+    else interpAtencional = "Elevada / Alta distractibilidad e inatención";
+
+    let interpMotora = "";
+    if (scoreMotora <= 18) interpMotora = "Baja / Inhibición motora";
+    else if (scoreMotora <= 26) interpMotora = "Normal / Adecuado control conductual";
+    else interpMotora = "Elevada / Propensión a actuar sin pensar / Inquietud";
+
+    let interpNoPlaneada = "";
+    if (scoreNoPlaneada <= 17) interpNoPlaneada = "Baja / Planificación rígida";
+    else if (scoreNoPlaneada <= 24) interpNoPlaneada = "Normal / Adecuada capacidad de planificación";
+    else interpNoPlaneada = "Elevada / Orientación al presente / Falta de previsión";
+
+    const nombreCompleto = `${document.getElementById('nombres').value} ${document.getElementById('apellido-paterno').value} ${document.getElementById('apellido-materno').value}`;
+    document.getElementById('email-subject').value = `Informe BIS-11: ${nombreCompleto} - ${aptitud}`;
+
+    document.getElementById('hidden-score').value = `${totalScore} pts (Min: 30, Max: 120)`;
+    document.getElementById('hidden-aptitud').value = aptitud;
+    document.getElementById('hidden-interpretation').value = interpretation;
+
+    document.getElementById('hidden-sub-atencional').value = `${scoreAtencional} pts [${interpAtencional}]`;
+    document.getElementById('hidden-sub-motora').value = `${scoreMotora} pts [${interpMotora}]`;
+    document.getElementById('hidden-sub-noplaneada').value = `${scoreNoPlaneada} pts [${interpNoPlaneada}]`;
+
+    const endTime = new Date();
+    document.getElementById('hidden-end-time').value = endTime.toLocaleString('es-CL');
+    if (startTime) {
+      document.getElementById('hidden-duration').value = formatDuration(endTime - startTime);
+    }
+
+    const form = document.getElementById('bis-form');
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: form.method,
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        document.getElementById('test-screen').classList.add('hidden');
+        document.getElementById('thank-you-screen').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } else {
+        alert("Ocurrió un error al enviar el formulario. Por favor intente nuevamente.");
+      }
+    }).catch(error => {
+      alert("Error de conexión. Verifique su red e intente nuevamente.");
+    });
+  }
+
+  window.onload = function() {
+    renderItems();
+    setToday();
+    setupRutFormatting();
+    setupFormListeners();
+    recordStartTime();
+  };
+</script>
+
+</body>
+</html>
