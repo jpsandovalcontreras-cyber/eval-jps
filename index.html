@@ -552,7 +552,7 @@
         <div class="helper-text" style="margin-bottom:14px;">Verifique que su nombre, RUT y edad estén correctos. Si necesita corregir algo, use el botón "Editar".</div>
         <div style="display:flex; gap:12px;">
           <button type="button" class="submit-btn" style="background-color:var(--text-muted);" onclick="hideReview()">Editar</button>
-          <button type="button" class="submit-btn" onclick="finalSubmit()">Confirmar y Enviar</button>
+          <button type="button" class="submit-btn" id="btn-final-confirm" onclick="finalSubmit()">Confirmar y Enviar</button>
         </div>
       </div>
     </div>
@@ -610,6 +610,9 @@
   const subAtencional = [4, 5, 9, 11, 12, 19, 20, 27, 28, 30];
   const subMotora = [2, 3, 4, 16, 17, 19, 21, 22, 23, 25, 30];
   const subNoPlaneada = [1, 7, 8, 10, 13, 14, 15, 18, 26, 29];
+
+  // URL del Google Apps Script
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPXJTiiUOaMZc90TWK8erFavwghl2vleT6p4fFrjh-EvWCauEeUFIaG19SlRapacA/exec';
 
   function renderItems() {
     const container = document.getElementById('items-container');
@@ -757,8 +760,12 @@
     handleFormSubmit();
   }
 
-  function handleFormSubmit(event) {
+  async function handleFormSubmit(event) {
     if (event) event.preventDefault();
+
+    const btnConfirm = document.getElementById('btn-final-confirm');
+    btnConfirm.disabled = true;
+    btnConfirm.innerText = "Enviando respuestas...";
 
     let totalScore = 0;
     let scoreAtencional = 0;
@@ -832,23 +839,32 @@
     const form = document.getElementById('bis-form');
     const formData = new FormData(form);
 
-    fetch(form.action, {
-      method: form.method,
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        document.getElementById('test-screen').classList.add('hidden');
-        document.getElementById('thank-you-screen').classList.remove('hidden');
-        window.scrollTo(0, 0);
-      } else {
-        alert("Ocurrió un error al enviar el formulario. Por favor intente nuevamente.");
-      }
-    }).catch(error => {
-      alert("Error de conexión. Verifique su red e intente nuevamente.");
-    });
+    try {
+      // 1. Envío a Google Apps Script para generación del PDF en Drive y correo
+      const googlePromise = fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      // 2. Envío a Formspree para respaldo de datos
+      const formspreePromise = fetch(form.action, {
+        method: form.method,
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      await Promise.all([googlePromise, formspreePromise]);
+
+      document.getElementById('test-screen').classList.add('hidden');
+      document.getElementById('thank-you-screen').classList.remove('hidden');
+      window.scrollTo(0, 0);
+
+    } catch (error) {
+      console.error("Error enviando respuestas:", error);
+      alert("Ocurrió un inconveniente al enviar la evaluación. Verifique su conexión e intente nuevamente.");
+      btnConfirm.disabled = false;
+      btnConfirm.innerText = "Confirmar y Enviar";
+    }
   }
 
   window.onload = function() {
