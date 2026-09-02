@@ -839,11 +839,18 @@
     const form = document.getElementById('bis-form');
     const formData = new FormData(form);
 
+    // Formatear FormData a URLSearchParams para garantizar recepción en Google Apps Script
+    const urlEncodedData = new URLSearchParams(formData);
+
     try {
-      // 1. Envío a Google Apps Script para generación del PDF en Drive y correo
+      // 1. Envío directo a Google Apps Script evitando bloqueo CORS
       const googlePromise = fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        body: formData
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: urlEncodedData.toString()
       });
 
       // 2. Envío a Formspree para respaldo de datos
