@@ -171,7 +171,7 @@
       color: var(--text-color);
     }
 
-    input[type="text"], input[type="number"], input[type="date"] {
+    input[type="text"], input[type="number"], input[type="date"], select {
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border-color);
@@ -183,7 +183,7 @@
       background: #fff;
     }
 
-    input:focus {
+    input:focus, select:focus {
       outline: none;
       border-color: var(--accent-color);
     }
@@ -446,10 +446,18 @@
             <input type="text" id="rut" name="RUT Evaluado" placeholder="12.345.678-9" maxlength="12" required>
           </div>
           <div class="form-group">
+            <label class="field-label" for="sexo">Sexo</label>
+            <select id="sexo" name="Sexo" required>
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="field-label" for="edad">Edad</label>
             <input type="number" id="edad" name="Edad" min="1" max="120" required>
           </div>
-          <div class="form-group">
+          <div class="form-group full">
             <label class="field-label" for="fecha">Fecha de Evaluación</label>
             <input type="date" id="fecha" name="Fecha Evaluacion" readonly>
           </div>
@@ -675,11 +683,12 @@
     const apPaterno = document.getElementById('apellido-paterno').value.trim();
     const apMaterno = document.getElementById('apellido-materno').value.trim();
     const rut = document.getElementById('rut').value.trim();
+    const sexo = document.getElementById('sexo').value;
     const edad = document.getElementById('edad').value.trim();
     const consent = document.getElementById('consent').checked;
     const motivo = document.querySelector('input[name="Motivo Evaluacion"]:checked');
 
-    const complete = answered === 30 && nombres && apPaterno && apMaterno && rut && edad && motivo && consent;
+    const complete = answered === 30 && nombres && apPaterno && apMaterno && rut && sexo && edad && motivo && consent;
     const btn = document.getElementById('review-btn');
     btn.disabled = !complete;
     document.getElementById('helper-text').style.display = complete ? 'none' : 'block';
@@ -690,7 +699,6 @@
     document.getElementById('bis-form').addEventListener('input', updateProgress);
   }
 
-  // Registro de hora de inicio (visible solo para el profesional, nunca para el evaluado)
   let startTime = null;
 
   function recordStartTime() {
@@ -710,6 +718,7 @@
     const apPaterno = document.getElementById('apellido-paterno').value;
     const apMaterno = document.getElementById('apellido-materno').value;
     const rut = document.getElementById('rut').value;
+    const sexo = document.getElementById('sexo').value;
     const edad = document.getElementById('edad').value;
     const fecha = document.getElementById('fecha').value;
     const motivo = document.querySelector('input[name="Motivo Evaluacion"]:checked').value;
@@ -717,13 +726,13 @@
     document.getElementById('review-summary').innerHTML = `
       <strong>Nombre completo:</strong> ${nombres} ${apPaterno} ${apMaterno}<br>
       <strong>RUT:</strong> ${rut}<br>
+      <strong>Sexo:</strong> ${sexo}<br>
       <strong>Edad:</strong> ${edad} años<br>
       <strong>Fecha de evaluación:</strong> ${fecha}<br>
       <strong>Motivo de la evaluación:</strong> ${motivo}<br>
       <strong>Ítems respondidos:</strong> 30 / 30
     `;
 
-    document.querySelector('.section-title:nth-of-type(1)');
     document.getElementById('bis-form').querySelectorAll('.form-grid, .confidentiality, .progress-wrap, #items-container, .consent-box, #review-btn, .helper-text').forEach(el => {
       el.classList.add('hidden');
     });
