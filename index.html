@@ -836,8 +836,8 @@
     handleFormSubmit();
   }
 
-  // Genera el PDF del certificado y devuelve un objeto File listo para adjuntar
-  function generarPDFCertificado(datos) {
+  // Construye el documento PDF del certificado (objeto jsPDF)
+  function construirPDF(datos) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'letter' });
     const marginLeft = 22;
@@ -906,9 +906,22 @@
     y += 5.5;
     doc.text('PSICÓLOGO', marginLeft + 20, y);
 
+    return doc;
+  }
+
+  // Devuelve el PDF como objeto File (para adjuntarlo a un FormData)
+  function generarPDFCertificado(datos) {
+    const doc = construirPDF(datos);
     const blob = doc.output('blob');
     const fileName = `Certificado_BIS11_${datos.nombreCompleto.replace(/\s+/g, '_')}.pdf`;
     return new File([blob], fileName, { type: 'application/pdf' });
+  }
+
+  // Devuelve el PDF como string base64 puro (sin el prefijo data:...;base64,)
+  function generarPDFBase64(datos) {
+    const doc = construirPDF(datos);
+    const dataUri = doc.output('datauristring');
+    return dataUri.split(',')[1];
   }
 
   function handleFormSubmit(event) {
@@ -1010,42 +1023,59 @@
     document.getElementById('sending-screen').classList.remove('hidden');
     window.scrollTo(0, 0);
 
-    let pdfFile;
+    let pdfBase64 = null;
+    let pdfFileName = `Certificado_BIS11_${nombreCompleto.replace(/\s+/g, '_')}.pdf`;
     try {
-      pdfFile = generarPDFCertificado({
+      pdfBase64 = generarPDFBase64({
         nombreCompleto, nombreCorto, rut, edad, sexo, fechaFormateada, conclusion, esApto
       });
     } catch (e) {
       console.error('Error generando PDF', e);
     }
 
-    const form = document.getElementById('bis-form');
-    const formData = new FormData(form);
-    if (pdfFile) {
-      formData.append('Certificado PDF', pdfFile, pdfFile.name);
-    }
+    const payload = {
+      asunto: `Informe BIS-11: ${nombreCompleto} - ${aptitud}`,
+      nombreCompleto, rut, edad,
+      sexo: sexo === 'F' ? 'Femenino' : 'Masculino',
+      cargo: cargoValue,
+      fecha: fechaFormateada,
+      puntaje: `${totalScore} pts (Min: 30, Max: 120)`,
+      dictamen: aptitud,
+      interpretacion: interpretation,
+      subAtencional: `${scoreAtencional} pts [${interpAtencional}]`,
+      subMotora: `${scoreMotora} pts [${interpMotora}]`,
+      subNoPlaneada: `${scoreNoPlaneada} pts [${interpNoPlaneada}]`,
+      conclusion,
+      horaInicio: document.getElementById('hidden-start-time').value,
+      horaTermino: document.getElementById('hidden-end-time').value,
+      duracion: document.getElementById('hidden-duration').value,
+      pdfBase64,
+      pdfFileName
+    };
 
-    fetch(form.action, {
-      method: form.method,
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        document.getElementById('sending-screen').classList.add('hidden');
-        document.getElementById('thank-you-screen').classList.remove('hidden');
-        window.scrollTo(0, 0);
-      } else {
+    // URL de tu Google Apps Script (termina en /exec).
+    // Reemplaza el texto de abajo por la URL que copiaste al implementar el script.
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZhv0r_-JRlWl77iVWgTDzaWE4L0P1MuT1oH-rU1qOLEfcg8slxJ3QWyAWyhRI834w/exec";
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(response => response.json())
+      .then(result => {
+        if (result && result.result === 'ok') {
+          document.getElementById('sending-screen').classList.add('hidden');
+          document.getElementById('thank-you-screen').classList.remove('hidden');
+          window.scrollTo(0, 0);
+        } else {
+          throw new Error(result && result.message ? result.message : 'Respuesta inesperada');
+        }
+      }).catch(error => {
+        console.error(error);
         document.getElementById('sending-screen').classList.add('hidden');
         document.getElementById('test-screen').classList.remove('hidden');
         alert("Ocurrió un error al enviar el formulario. Por favor intente nuevamente.");
-      }
-    }).catch(error => {
-      document.getElementById('sending-screen').classList.add('hidden');
-      document.getElementById('test-screen').classList.remove('hidden');
-      alert("Error de conexión. Verifique su red e intente nuevamente.");
-    });
+      });
   }
 
   window.onload = function() {
