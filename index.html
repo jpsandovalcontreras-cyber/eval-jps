@@ -917,9 +917,9 @@
     const pageHeight = doc.internal.pageSize.getHeight();
     const usableWidth = pageWidth - marginLeft - marginRight;
     const fontSize = 12;
-    const lineHeight = 5.9; // ~12pt con interlineado 1.4
+    const lineHeight = 5.6; // ~12pt con interlineado compacto para caber en una hoja
     const padX = 2.5;
-    const padY = 2.5;
+    const padY = 2;
 
     doc.setFontSize(fontSize);
     doc.setDrawColor(0);
@@ -932,12 +932,12 @@
     doc.rect(marginLeft, y, usableWidth, tituloAltura, 'FD');
     doc.setFont('helvetica', 'bold');
     doc.text('CERTIFICADO CONTROL DE IMPULSOS', pageWidth / 2, y + tituloAltura / 2 + 1.5, { align: 'center' });
-    y += tituloAltura + 9;
+    y += tituloAltura + 7;
 
     // --- Subtítulo ---
     doc.setFont('helvetica', 'bold');
     doc.text('EL PSICÓLOGO QUIEN SUSCRIBE CERTIFICA:', pageWidth / 2, y, { align: 'center' });
-    y += 9;
+    y += 7;
 
     // --- Párrafo principal (justificado, con nombre/RUT/edad en negrita) ---
     const posesion = datos.esApto
@@ -955,12 +955,12 @@
       { text: datos.nombreCompleto, bold: true },
       { text: posesion, bold: false }
     ], marginLeft, y, usableWidth, lineHeight, { justificar: true });
-    y += 9;
+    y += 7;
 
     // --- Título METODOLOGÍA ---
     doc.setFont('helvetica', 'bold');
     doc.text('METODOLOGÍA', pageWidth / 2, y, { align: 'center' });
-    y += 8;
+    y += 6;
 
     // --- Tabla de metodología: técnicas (izquierda) + fecha (derecha, celda combinada) ---
     const colFechaAncho = usableWidth * 0.35;
@@ -995,12 +995,12 @@
     doc.setFont('helvetica', 'bold');
     doc.text(datos.fechaFormateada, marginLeft + colTecnicasAncho + colFechaAncho / 2, y + cuerpoAltura / 2 + 1.5, { align: 'center' });
 
-    y += cuerpoAltura + 10;
+    y += cuerpoAltura + 7;
 
     // --- Título CONCLUSIÓN ---
     doc.setFont('helvetica', 'bold');
     doc.text('CONCLUSIÓN', pageWidth / 2, y, { align: 'center' });
-    y += 8;
+    y += 6;
 
     // --- Recuadro de conclusión (centrado, en negrita) ---
     doc.setFont('helvetica', 'bold');
@@ -1013,17 +1013,18 @@
     conclusionLineas.forEach((linea, i) => {
       doc.text(linea, pageWidth / 2, y + padY + 4.5 + i * lineHeight, { align: 'center' });
     });
-    y += conclusionAltura + 16;
+    y += conclusionAltura + 10;
 
-    // --- Firma + timbre, centrada y en tamaño legible ---
-    if (y + 55 > pageHeight - marginTop) { doc.addPage(); y = marginTop; }
-    const imgWidth = 85;
+    // --- Firma + timbre, centrada, agrandada, con la línea justo bajo el trazo ---
+    if (y + 60 > pageHeight - marginTop) { doc.addPage(); y = marginTop; }
+    const imgWidth = 100;
     const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen
     const imgX = (pageWidth - imgWidth) / 2;
+    const fraccionTrazo = 0.6618; // punto vertical donde termina el trazo real dentro de la imagen
     try {
       doc.addImage(FIRMA_TIMBRE_B64, 'PNG', imgX, y, imgWidth, imgHeight);
     } catch (e) { /* si la imagen no carga, el PDF se genera igual sin firma */ }
-    y += imgHeight + 5;
+    y = y + imgHeight * fraccionTrazo + 2;
 
     doc.setFont('helvetica', 'normal');
     doc.text('_____________________________', pageWidth / 2, y, { align: 'center' });
