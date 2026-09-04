@@ -1017,9 +1017,24 @@
     // --- Firma + timbre: posición y tamaño fijos, siempre en el mismo lugar de la hoja ---
     const imgWidth = 113.2; // ancho total calculado para que el timbre mida 5.5cm de ancho
     const imgHeight = imgWidth / (883 / 395); // proporción real de la imagen recortada (~50.6mm)
-    const imgX = (pageWidth - imgWidth) / 2;
-    const imgTopY = 217; // 212mm + 5mm más abajo, como pediste
+    const imgTopY = 232; // 217mm + 1.5cm más abajo, para fusionar la tinta con la raya
     const fraccionTrazo = 0.9747; // punto vertical donde termina el trazo real dentro de la imagen recortada
+    const firmaCentroFraccion = 0.2050; // posición horizontal del centro del trazo de firma dentro de la imagen recortada
+
+    // Calcula dónde cae el centro de la letra "D" de "SANDOVAL" en el nombre
+    // impreso (centrado en la página), usando el ancho real del texto, para
+    // alinear el trazo de la firma justo sobre esa letra.
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(fontSize);
+    const nombreCompletoFirma = 'JUAN PABLO SANDOVAL CONTRERAS';
+    const prefijoHastaD = 'JUAN PABLO SAN';
+    const anchoNombreCompleto = doc.getTextWidth(nombreCompletoFirma);
+    const anchoPrefijo = doc.getTextWidth(prefijoHastaD);
+    const anchoLetraD = doc.getTextWidth('D');
+    const nombreInicioX = pageWidth / 2 - anchoNombreCompleto / 2;
+    const centroLetraDX = nombreInicioX + anchoPrefijo + anchoLetraD / 2;
+
+    const imgX = centroLetraDX - firmaCentroFraccion * imgWidth;
 
     if (imgTopY + imgHeight + 30 > pageHeight) {
       // Salvaguarda: si el contenido anterior fuera excepcionalmente largo y
