@@ -908,7 +908,7 @@
 
   function construirPDF(datos) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: [220, 360] }); // 22 x 36 cm
+    const doc = new jsPDF({ unit: 'mm', format: 'legal' }); // 215.9 x 355.6 mm
 
     const marginLeft = 30;
     const marginRight = 30;
@@ -1013,31 +1013,38 @@
     conclusionLineas.forEach((linea, i) => {
       doc.text(linea, pageWidth / 2, y + padY + 4.5 + i * lineHeight, { align: 'center' });
     });
-    y += conclusionAltura + 10;
 
-    // --- Firma + timbre, centrada, agrandada, con la línea justo bajo el trazo ---
-    if (y + 60 > pageHeight - marginTop) { doc.addPage(); y = marginTop; }
-    const imgWidth = 130;
-    const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen
+    // --- Firma + timbre: posición y tamaño fijos, siempre en el mismo lugar de la hoja ---
+    const imgWidth = 76.3; // ancho exacto solicitado (7.63 cm)
+    const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen (~27.5mm)
     const imgX = (pageWidth - imgWidth) / 2;
+    const imgTopY = 212; // posición fija exacta solicitada (21.2 cm desde el tope de la hoja)
     const fraccionTrazo = 0.6618; // punto vertical donde termina el trazo real dentro de la imagen
-    try {
-      doc.addImage(FIRMA_TIMBRE_B64, 'PNG', imgX, y, imgWidth, imgHeight);
-    } catch (e) { /* si la imagen no carga, el PDF se genera igual sin firma */ }
-    y = y + imgHeight * fraccionTrazo + 2;
 
+    if (imgTopY + imgHeight + 30 > pageHeight) {
+      // Salvaguarda: si el contenido anterior fuera excepcionalmente largo y
+      // chocara con la posición fija de la firma, se agrega una hoja nueva
+      // para la firma en vez de superponerla con el texto.
+      doc.addPage();
+    }
+
+    try {
+      doc.addImage(FIRMA_TIMBRE_B64, 'PNG', imgX, imgTopY, imgWidth, imgHeight);
+    } catch (e) { /* si la imagen no carga, el PDF se genera igual sin firma */ }
+
+    let ySigno = imgTopY + imgHeight * fraccionTrazo + 2;
     doc.setFont('helvetica', 'normal');
-    doc.text('_____________________________', pageWidth / 2, y, { align: 'center' });
-    y += 6;
+    doc.text('_____________________________', pageWidth / 2, ySigno, { align: 'center' });
+    ySigno += 6;
     doc.setFont('helvetica', 'bold');
-    doc.text('JUAN PABLO SANDOVAL CONTRERAS', pageWidth / 2, y, { align: 'center' });
-    y += 5.5;
+    doc.text('JUAN PABLO SANDOVAL CONTRERAS', pageWidth / 2, ySigno, { align: 'center' });
+    ySigno += 5.5;
     doc.setFont('helvetica', 'normal');
-    doc.text('RUT: 13.523.055-3', pageWidth / 2, y, { align: 'center' });
-    y += 5.5;
-    doc.text('NÚMERO DE REGISTRO N° 97596', pageWidth / 2, y, { align: 'center' });
-    y += 5.5;
-    doc.text('PSICÓLOGO', pageWidth / 2, y, { align: 'center' });
+    doc.text('RUT: 13.523.055-3', pageWidth / 2, ySigno, { align: 'center' });
+    ySigno += 5.5;
+    doc.text('NÚMERO DE REGISTRO N° 97596', pageWidth / 2, ySigno, { align: 'center' });
+    ySigno += 5.5;
+    doc.text('PSICÓLOGO', pageWidth / 2, ySigno, { align: 'center' });
 
     return doc;
   }
