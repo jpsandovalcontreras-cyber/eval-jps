@@ -595,6 +595,9 @@
     </div>
   </div>
 
+
+  <iframe name="hidden-target-frame" style="display:none;"></iframe>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1054,28 +1057,34 @@
     };
 
     // URL de tu Google Apps Script (termina en /exec).
-    // Reemplaza el texto de abajo por la URL que copiaste al implementar el script.
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZhv0r_-JRlWl77iVWgTDzaWE4L0P1MuT1oH-rU1qOLEfcg8slxJ3QWyAWyhRI834w/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg1pRL9oZEJJNjKWwtCTR_-kGJcX9MnETyRBKupSBpd5HQlkxhnkjtdK6ON72pPnR6/exec";
 
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(response => response.json())
-      .then(result => {
-        if (result && result.result === 'ok') {
-          document.getElementById('sending-screen').classList.add('hidden');
-          document.getElementById('thank-you-screen').classList.remove('hidden');
-          window.scrollTo(0, 0);
-        } else {
-          throw new Error(result && result.message ? result.message : 'Respuesta inesperada');
-        }
-      }).catch(error => {
-        console.error(error);
-        document.getElementById('sending-screen').classList.add('hidden');
-        document.getElementById('test-screen').classList.remove('hidden');
-        alert("Ocurrió un error al enviar el formulario. Por favor intente nuevamente.");
-      });
+    // Envío vía formulario oculto + iframe: evita el bloqueo de CORS que
+    // impide leer la respuesta de Apps Script desde fetch en un dominio
+    // distinto (GitHub Pages). No podemos leer la respuesta, así que
+    // mostramos la pantalla de agradecimiento tras un breve margen de
+    // tiempo, asumiendo éxito (Apps Script sí procesa y envía el correo).
+    const hiddenForm = document.createElement('form');
+    hiddenForm.method = 'POST';
+    hiddenForm.action = APPS_SCRIPT_URL;
+    hiddenForm.target = 'hidden-target-frame';
+    hiddenForm.style.display = 'none';
+
+    const payloadInput = document.createElement('input');
+    payloadInput.type = 'hidden';
+    payloadInput.name = 'payload';
+    payloadInput.value = JSON.stringify(payload);
+    hiddenForm.appendChild(payloadInput);
+
+    document.body.appendChild(hiddenForm);
+    hiddenForm.submit();
+
+    setTimeout(() => {
+      document.body.removeChild(hiddenForm);
+      document.getElementById('sending-screen').classList.add('hidden');
+      document.getElementById('thank-you-screen').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }, 2500);
   }
 
   window.onload = function() {
