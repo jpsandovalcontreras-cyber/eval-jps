@@ -877,37 +877,55 @@
     y += 10;
 
     doc.setFont('helvetica', 'bold');
-    doc.text(`FECHA DE APLICACIÓN: `, marginLeft, y);
+    const fechaLabel = 'FECHA DE APLICACIÓN: ';
+    doc.text(fechaLabel, marginLeft, y);
+    const fechaLabelWidth = doc.getTextWidth(fechaLabel);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${datos.fechaFormateada}`, marginLeft + 42, y);
+    doc.text(datos.fechaFormateada, marginLeft + fechaLabelWidth, y);
     y += 10;
 
     doc.setFont('helvetica', 'bold');
     doc.text('CONCLUSIÓN', marginLeft, y);
-    y += 7;
-    doc.setFont('helvetica', 'normal');
-    const conclusionLines = doc.splitTextToSize(datos.conclusion, usableWidth);
-    doc.text(conclusionLines, marginLeft, y);
-    y += conclusionLines.length * 5.5 + 22;
+    y += 8;
 
-    // Firma + timbre
-    if (y > 220) { doc.addPage(); y = 30; }
-    try {
-      doc.addImage(FIRMA_TIMBRE_B64, 'PNG', marginLeft + 25, y - 18, 60, 22);
-    } catch (e) { /* si la imagen no carga, el PDF se genera igual sin firma */ }
-    y += 12;
     doc.setFont('helvetica', 'normal');
-    doc.text('_____________________________', marginLeft + 20, y);
+    const boxPaddingX = 4;
+    const boxPaddingY = 4;
+    const conclusionLines = doc.splitTextToSize(datos.conclusion, usableWidth - boxPaddingX * 2);
+    const lineHeight = 5.5;
+    const boxHeight = conclusionLines.length * lineHeight + boxPaddingY * 2;
+
+    // Salto de página si el recuadro no cabe entera
+    if (y + boxHeight > 265) { doc.addPage(); y = 30; }
+
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.4);
+    doc.rect(marginLeft, y, usableWidth, boxHeight);
+    doc.text(conclusionLines, marginLeft + boxPaddingX, y + boxPaddingY + 3.5);
+    y += boxHeight + 20;
+
+    // Firma + timbre, centrada y en tamaño legible
+    if (y > 200) { doc.addPage(); y = 30; }
+    const imgWidth = 85;
+    const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen
+    const imgX = (pageWidth - imgWidth) / 2;
+    try {
+      doc.addImage(FIRMA_TIMBRE_B64, 'PNG', imgX, y, imgWidth, imgHeight);
+    } catch (e) { /* si la imagen no carga, el PDF se genera igual sin firma */ }
+    y += imgHeight + 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.text('_____________________________', pageWidth / 2, y, { align: 'center' });
     y += 6;
     doc.setFont('helvetica', 'bold');
-    doc.text('JUAN PABLO SANDOVAL CONTRERAS', marginLeft + 20, y);
+    doc.text('JUAN PABLO SANDOVAL CONTRERAS', pageWidth / 2, y, { align: 'center' });
     y += 5.5;
     doc.setFont('helvetica', 'normal');
-    doc.text('RUT: 13.523.055-3', marginLeft + 20, y);
+    doc.text('RUT: 13.523.055-3', pageWidth / 2, y, { align: 'center' });
     y += 5.5;
-    doc.text('NÚMERO DE REGISTRO N° 97596', marginLeft + 20, y);
+    doc.text('NÚMERO DE REGISTRO N° 97596', pageWidth / 2, y, { align: 'center' });
     y += 5.5;
-    doc.text('PSICÓLOGO', marginLeft + 20, y);
+    doc.text('PSICÓLOGO', pageWidth / 2, y, { align: 'center' });
 
     return doc;
   }
