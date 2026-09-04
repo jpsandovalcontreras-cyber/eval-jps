@@ -840,72 +840,183 @@
   }
 
   // Construye el documento PDF del certificado (objeto jsPDF)
+  // Mide el ancho de una palabra aplicando negrita/normal antes de medir
+  function medirPalabra(doc, palabra, negrita) {
+    doc.setFont('helvetica', negrita ? 'bold' : 'normal');
+    return doc.getTextWidth(palabra);
+  }
+
+  // Dibuja un párrafo con segmentos en negrita/normal ("runs"), ajustando línea
+  // y justificando el texto (excepto la última línea). Devuelve la Y final.
+  function dibujarParrafoMixto(doc, runs, x, y, maxWidth, lineHeight, opciones) {
+    opciones = opciones || {};
+    const justificar = opciones.justificar !== false;
+
+    doc.setFont('helvetica', 'normal');
+    const espacio = doc.getTextWidth(' ');
+
+    const palabras = [];
+    runs.forEach(run => {
+      String(run.text).split(' ').forEach(w => {
+        if (w.length) palabras.push({ texto: w, negrita: !!run.bold });
+      });
+    });
+
+    const lineas = [];
+    let actual = [];
+    let anchoActual = 0;
+    palabras.forEach(p => {
+      const anchoPalabra = medirPalabra(doc, p.texto, p.negrita);
+      const anchoExtra = actual.length ? espacio + anchoPalabra : anchoPalabra;
+      if (anchoActual + anchoExtra > maxWidth && actual.length) {
+        lineas.push(actual);
+        actual = [p];
+        anchoActual = anchoPalabra;
+      } else {
+        actual.push(p);
+        anchoActual += anchoExtra;
+      }
+    });
+    if (actual.length) lineas.push(actual);
+
+    let curY = y;
+    lineas.forEach((linea, idx) => {
+      const esUltima = idx === lineas.length - 1;
+      let anchoNatural = 0;
+      linea.forEach((p, i) => {
+        anchoNatural += medirPalabra(doc, p.texto, p.negrita);
+        if (i < linea.length - 1) anchoNatural += espacio;
+      });
+
+      let gap = espacio;
+      if (justificar && !esUltima && linea.length > 1) {
+        const extra = maxWidth - anchoNatural;
+        gap = espacio + extra / (linea.length - 1);
+      }
+
+      let curX = x;
+      linea.forEach(p => {
+        doc.setFont('helvetica', p.negrita ? 'bold' : 'normal');
+        doc.text(p.texto, curX, curY);
+        curX += medirPalabra(doc, p.texto, p.negrita) + gap;
+      });
+      curY += lineHeight;
+    });
+
+    return curY;
+  }
+
   function construirPDF(datos) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'letter' });
-    const marginLeft = 22;
-    const marginRight = 22;
+
+    const marginLeft = 30;
+    const marginRight = 30;
+    const marginTop = 25;
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const usableWidth = pageWidth - marginLeft - marginRight;
-    let y = 25;
+    const fontSize = 12;
+    const lineHeight = 5.9; // ~12pt con interlineado 1.4
+    const padX = 2.5;
+    const padY = 2.5;
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('CERTIFICADO CONTROL DE IMPULSOS', pageWidth / 2, y, { align: 'center' });
-    y += 12;
-
-    doc.setFontSize(11);
-    doc.text('EL PSICÓLOGO QUIEN SUSCRIBE CERTIFICA:', marginLeft, y);
-    y += 8;
-
-    doc.setFont('helvetica', 'normal');
-    const cuerpo = `Que ${datos.nombreCompleto}, RUT ${datos.rut}, de ${datos.edad} años de edad fue evaluado/a en el manejo y control de impulsos y de acuerdo a los resultados obtenidos a través de la aplicación de pruebas, entrevista y lo observado al momento de la evaluación se puede apreciar que ${datos.nombreCorto} ${datos.esApto ? 'posee un adecuado control conductual acerca del manejo de la ira o comportamiento agresivo, además de un adecuado manejo y control de su impulsividad.' : 'presenta indicadores que requieren evaluación complementaria respecto al manejo de la ira, comportamiento agresivo y control de la impulsividad.'}`;
-    const cuerpoLines = doc.splitTextToSize(cuerpo, usableWidth);
-    doc.text(cuerpoLines, marginLeft, y);
-    y += cuerpoLines.length * 5.5 + 8;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('METODOLOGÍA', marginLeft, y);
-    y += 6;
-    doc.text('TÉCNICAS E INSTRUMENTOS UTILIZADOS PARA LA EVALUACIÓN:', marginLeft, y);
-    y += 7;
-
-    doc.setFont('helvetica', 'normal');
-    doc.text('•  ENTREVISTA POR COMPETENCIAS', marginLeft + 3, y);
-    y += 6;
-    doc.text('•  ESCALA DE IMPULSIVIDAD DE BARRATT (BIS-11)', marginLeft + 3, y);
-    y += 10;
-
-    doc.setFont('helvetica', 'bold');
-    const fechaLabel = 'FECHA DE APLICACIÓN: ';
-    doc.text(fechaLabel, marginLeft, y);
-    const fechaLabelWidth = doc.getTextWidth(fechaLabel);
-    doc.setFont('helvetica', 'normal');
-    doc.text(datos.fechaFormateada, marginLeft + fechaLabelWidth, y);
-    y += 10;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('CONCLUSIÓN', marginLeft, y);
-    y += 8;
-
-    doc.setFont('helvetica', 'normal');
-    const boxPaddingX = 4;
-    const boxPaddingY = 4;
-    const conclusionLines = doc.splitTextToSize(datos.conclusion, usableWidth - boxPaddingX * 2);
-    const lineHeight = 5.5;
-    const boxHeight = conclusionLines.length * lineHeight + boxPaddingY * 2;
-
-    // Salto de página si el recuadro no cabe entera
-    if (y + boxHeight > 265) { doc.addPage(); y = 30; }
-
+    doc.setFontSize(fontSize);
     doc.setDrawColor(0);
-    doc.setLineWidth(0.4);
-    doc.rect(marginLeft, y, usableWidth, boxHeight);
-    doc.text(conclusionLines, marginLeft + boxPaddingX, y + boxPaddingY + 3.5);
-    y += boxHeight + 20;
+    doc.setLineWidth(0.3);
+    let y = marginTop;
 
-    // Firma + timbre, centrada y en tamaño legible
-    if (y > 200) { doc.addPage(); y = 30; }
+    // --- Título con fondo gris y borde ---
+    const tituloAltura = 12;
+    doc.setFillColor(242, 242, 242);
+    doc.rect(marginLeft, y, usableWidth, tituloAltura, 'FD');
+    doc.setFont('helvetica', 'bold');
+    doc.text('CERTIFICADO CONTROL DE IMPULSOS', pageWidth / 2, y + tituloAltura / 2 + 1.5, { align: 'center' });
+    y += tituloAltura + 9;
+
+    // --- Subtítulo ---
+    doc.setFont('helvetica', 'bold');
+    doc.text('EL PSICÓLOGO QUIEN SUSCRIBE CERTIFICA:', pageWidth / 2, y, { align: 'center' });
+    y += 9;
+
+    // --- Párrafo principal (justificado, con nombre/RUT/edad en negrita) ---
+    const posesion = datos.esApto
+      ? 'posee un adecuado control conductual acerca del manejo de la ira o comportamiento agresivo, además de un adecuado manejo y control de su impulsividad.'
+      : 'presenta indicadores que requieren evaluación complementaria respecto al manejo de la ira, comportamiento agresivo y control de la impulsividad.';
+
+    y = dibujarParrafoMixto(doc, [
+      { text: 'Que', bold: false },
+      { text: datos.nombreCompleto, bold: true },
+      { text: 'Rut', bold: false },
+      { text: datos.rut, bold: true },
+      { text: 'De', bold: false },
+      { text: datos.edad, bold: true },
+      { text: 'años de edad fue evaluado/a en el manejo y control de impulsos y de acuerdo a los resultados obtenidos a través de la aplicación de pruebas, entrevista y lo observado al momento de la evaluación se puede apreciar que', bold: false },
+      { text: datos.nombreCompleto, bold: true },
+      { text: posesion, bold: false }
+    ], marginLeft, y, usableWidth, lineHeight, { justificar: true });
+    y += 9;
+
+    // --- Título METODOLOGÍA ---
+    doc.setFont('helvetica', 'bold');
+    doc.text('METODOLOGÍA', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+
+    // --- Tabla de metodología: técnicas (izquierda) + fecha (derecha, celda combinada) ---
+    const colFechaAncho = usableWidth * 0.35;
+    const colTecnicasAncho = usableWidth - colFechaAncho;
+
+    doc.setFont('helvetica', 'bold');
+    const headerTecnicasLineas = doc.splitTextToSize('TÉCNICAS E INSTRUMENTOS UTILIZADOS PARA LA EVALUACIÓN:', colTecnicasAncho - padX * 2);
+    const headerFechaLineas = doc.splitTextToSize('FECHA DE APLICACIÓN:', colFechaAncho - padX * 2);
+    const headerAltura = Math.max(headerTecnicasLineas.length, headerFechaLineas.length) * lineHeight + padY * 2;
+
+    doc.rect(marginLeft, y, colTecnicasAncho, headerAltura);
+    doc.rect(marginLeft + colTecnicasAncho, y, colFechaAncho, headerAltura);
+    doc.text(headerTecnicasLineas, marginLeft + padX, y + padY + 3.8);
+    doc.text(headerFechaLineas, marginLeft + colTecnicasAncho + padX, y + padY + 3.8);
+    y += headerAltura;
+
+    const tecnicas = ['ENTREVISTA POR COMPETENCIAS', 'ESCALA DE IMPULSIVIDAD DE BARRATT (BIS-11)'];
+    doc.setFont('helvetica', 'normal');
+    const filasTecnicas = tecnicas.map(t => doc.splitTextToSize(t, colTecnicasAncho - padX * 2));
+    const alturasFilas = filasTecnicas.map(lineas => lineas.length * lineHeight + padY * 2);
+    const cuerpoAltura = alturasFilas.reduce((a, b) => a + b, 0);
+
+    let curYTabla = y;
+    filasTecnicas.forEach((lineas, i) => {
+      doc.rect(marginLeft, curYTabla, colTecnicasAncho, alturasFilas[i]);
+      doc.text(lineas, marginLeft + padX, curYTabla + padY + 3.8);
+      curYTabla += alturasFilas[i];
+    });
+
+    // Celda de fecha combinada verticalmente con la altura total de las técnicas
+    doc.rect(marginLeft + colTecnicasAncho, y, colFechaAncho, cuerpoAltura);
+    doc.setFont('helvetica', 'bold');
+    doc.text(datos.fechaFormateada, marginLeft + colTecnicasAncho + colFechaAncho / 2, y + cuerpoAltura / 2 + 1.5, { align: 'center' });
+
+    y += cuerpoAltura + 10;
+
+    // --- Título CONCLUSIÓN ---
+    doc.setFont('helvetica', 'bold');
+    doc.text('CONCLUSIÓN', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+
+    // --- Recuadro de conclusión (centrado, en negrita) ---
+    doc.setFont('helvetica', 'bold');
+    const conclusionLineas = doc.splitTextToSize(datos.conclusion, usableWidth - padX * 2 - 6);
+    const conclusionAltura = conclusionLineas.length * lineHeight + padY * 2 + 3;
+
+    if (y + conclusionAltura > pageHeight - 60) { doc.addPage(); y = marginTop; }
+
+    doc.rect(marginLeft, y, usableWidth, conclusionAltura);
+    conclusionLineas.forEach((linea, i) => {
+      doc.text(linea, pageWidth / 2, y + padY + 4.5 + i * lineHeight, { align: 'center' });
+    });
+    y += conclusionAltura + 16;
+
+    // --- Firma + timbre, centrada y en tamaño legible ---
+    if (y + 55 > pageHeight - marginTop) { doc.addPage(); y = marginTop; }
     const imgWidth = 85;
     const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen
     const imgX = (pageWidth - imgWidth) / 2;
@@ -1032,7 +1143,7 @@
       document.getElementById('hidden-duration').value = formatDuration(endTime - startTime);
     }
 
-    const conclusion = generarConclusion(nombreCorto, sexo, cargoValue, esApto);
+    const conclusion = generarConclusion(nombreCompleto, sexo, cargoValue, esApto);
     document.getElementById('hidden-conclusion').value = conclusion;
 
     const [yyyy, mm, dd] = fecha.split('-');
