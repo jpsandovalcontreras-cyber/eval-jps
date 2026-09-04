@@ -908,7 +908,7 @@
 
   function construirPDF(datos) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'letter' });
+    const doc = new jsPDF({ unit: 'mm', format: [220, 360] }); // 22 x 36 cm
 
     const marginLeft = 30;
     const marginRight = 30;
@@ -1017,7 +1017,7 @@
 
     // --- Firma + timbre, centrada, agrandada, con la línea justo bajo el trazo ---
     if (y + 60 > pageHeight - marginTop) { doc.addPage(); y = marginTop; }
-    const imgWidth = 100;
+    const imgWidth = 130;
     const imgHeight = imgWidth / (1716 / 618); // mantiene la proporción real de la imagen
     const imgX = (pageWidth - imgWidth) / 2;
     const fraccionTrazo = 0.6618; // punto vertical donde termina el trazo real dentro de la imagen
