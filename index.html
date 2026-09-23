@@ -501,6 +501,9 @@
               <input type="radio" name="Motivo Evaluacion" value="Jefe de Seguridad Privada"> Jefe de Seguridad Privada
             </label>
             <label class="option-btn">
+              <input type="radio" name="Motivo Evaluacion" value="Encargado de Seguridad Privada"> Encargado de Seguridad Privada
+            </label>
+            <label class="option-btn">
               <input type="radio" name="Motivo Evaluacion" value="Asesor de Seguridad Privada"> Asesor de Seguridad Privada
             </label>
             <label class="option-btn">
@@ -520,7 +523,7 @@
         </div>
 
         <div class="instructions">
-          <strong>Instrucciones:</strong> Las personas son diferentes en cuanto a la forma en que se comportan y piensan en distintas situaciones. Ésta es una prueba para medir algunas de las formas en que usted actúa y piensa. No se detenga demasiado tiempo en ninguna de las oraciones. Responda rápida y honestamente.
+          <strong>Instrucciones:</strong> Las personas son diferentes en cuanto a la forma en que se comportan y piensan en distintas situaciones. Esta es una prueba para medir algunas de las formas en que usted actúa y piensa. No se detenga demasiado tiempo en ninguna de las oraciones. Responda rápida y honestamente.
         </div>
 
         <div class="confidentiality">
@@ -667,6 +670,10 @@
     "Jefe de Seguridad Privada": {
       M: "JEFE DE SEGURIDAD PRIVADA",
       F: "JEFA DE SEGURIDAD PRIVADA"
+    },
+    "Encargado de Seguridad Privada": {
+      M: "ENCARGADO DE SEGURIDAD PRIVADA",
+      F: "ENCARGADA DE SEGURIDAD PRIVADA"
     },
     "Asesor de Seguridad Privada": {
       M: "ASESOR DE SEGURIDAD PRIVADA",
@@ -1109,7 +1116,7 @@
     let esApto = true;
 
     if (totalScore <= 51) {
-      interpretation = "Impulsividad Extremadamente Baja / Sobre-control inhibitorio (30-51 pts).";
+      interpretation = "Impulsividad Extremadamente Baja / Sobrecontrol inhibitorio (30-51 pts).";
       aptitud = "APTO (Sin rasgos impulsivos significativos)";
       esApto = true;
     } else if (totalScore <= 71) {
