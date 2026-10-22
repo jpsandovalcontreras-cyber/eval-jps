@@ -660,8 +660,8 @@
       F: "GUARDIA DE SEGURIDAD PRIVADA"
     },
     "Operador de CCTV": {
-      M: "OPERADOR DE CCTV",
-      F: "OPERADORA DE CCTV"
+      M: "OPERADOR DE CENTRAL DE CÁMARAS Y ALARMAS (CCTV)",
+      F: "OPERADORA DE CENTRAL DE CÁMARAS Y ALARMAS (CCTV)"
     },
     "Supervisor de Seguridad": {
       M: "SUPERVISOR DE SEGURIDAD PRIVADA",
@@ -1235,15 +1235,41 @@
     payloadInput.value = JSON.stringify(payload);
     hiddenForm.appendChild(payloadInput);
 
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
+    // Esperamos a que el servidor (Apps Script) termine de responder antes de
+    // mostrar el agradecimiento. Así el envío no se corta si el PDF es pesado
+    // o la conexión es lenta (antes se asumía éxito a los 2,5 s fijos).
+    const targetFrame = document.getElementById('hidden-target-frame');
+    let finalizado = false;
 
-    setTimeout(() => {
-      document.body.removeChild(hiddenForm);
+    const finalizarEnvio = () => {
+      if (finalizado) return;
+      finalizado = true;
+      clearTimeout(fallbackTimer);
+      window.removeEventListener('beforeunload', avisarSalida);
+      if (hiddenForm.parentNode) hiddenForm.parentNode.removeChild(hiddenForm);
       document.getElementById('sending-screen').classList.add('hidden');
       document.getElementById('thank-you-screen').classList.remove('hidden');
       window.scrollTo(0, 0);
-    }, 2500);
+    };
+
+    // Evita que cierren/recarguen la página mientras se está enviando
+    const avisarSalida = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', avisarSalida);
+
+    // Se dispara cuando el servidor responde (aunque no podamos leer la respuesta por CORS)
+    targetFrame.addEventListener('load', () => {
+      // pequeña espera para que la pantalla de "enviando" no parpadee
+      setTimeout(finalizarEnvio, 800);
+    }, { once: true });
+
+    // Respaldo: si por algún motivo nunca llega el "load", no dejamos al usuario colgado
+    const fallbackTimer = setTimeout(finalizarEnvio, 45000);
+
+    document.body.appendChild(hiddenForm);
+    hiddenForm.submit();
   }
 
   window.onload = function() {
